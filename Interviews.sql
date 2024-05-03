@@ -1,75 +1,41 @@
-SELECT
 
-con.contest_id.
-
-con.hacker.id.
-
-con.name
-
-SUMiss.total submissions AS sum total submissions,
-
-SUMiss.total_accepted_submissions) AS sum total_accepted_submissions, SUMivst.total_views AS sum_total views
-
-SUMivst.total_unique_views AS sum total_unique views
-
-FROM
-
-Contests con
-
-JOIN
-
-Colleges cal ON con.contest_idcol.contest_id
-
-JOIN
-
-Challenges cha ON cha.college_id=col.college_id
-
-LEFT JOIN
-
-(SELECT
-
-challenge_id,
-
-SUM total views AS total views,
-
-SUM total_unique_views AS total_unique_views
-
-FROM
-
-View Stats
-
-GROUP BY
-
-challenge idi vst ON vst.challenge_id=cha.challenge_id
-
-LEFT JOIN
-
-SELECT
-
-challenge id,
-
-SUM total submissions AS total_submissions,
-
-SUM.total accepted_submissions AS total accepted submissions
-
-FROM
-
-Submission Stats
-
-GROUP BY
-
-challenge id ss ON ss.challenge_id = cha.challenge_id
-
-GROUP BY
-
-con.contest_id.
-
-con.hacker id.
-
-con.name
-
-HAVING
-
-sum total submissions sum total_accepted_submissions + sum total views + sum total_unique_views> 0
-
-ORDER BY contest_id;
+SELECT 
+    con.contest_id, 
+    con.hacker_id, 
+    con.name, 
+    SUM(ss.total_submissions) AS sum_total_submissions,
+    SUM(ss.total_accepted_submissions) AS sum_total_accepted_submissions, 
+    SUM(vst.total_views) AS sum_total_views,  
+    SUM(vst.total_unique_views) AS sum_total_unique_views
+FROM 
+    Contests con
+JOIN 
+    Colleges col ON con.contest_id = col.contest_id
+JOIN 
+    Challenges cha ON cha.college_id = col.college_id
+LEFT JOIN 
+    (SELECT 
+        challenge_id, 
+        SUM(total_views) AS total_views,
+        SUM(total_unique_views) AS total_unique_views
+    FROM 
+        View_Stats
+    GROUP BY 
+        challenge_id) vst ON vst.challenge_id = cha.challenge_id
+LEFT JOIN 
+    (SELECT 
+        challenge_id, 
+        SUM(total_submissions) AS total_submissions,
+        SUM(total_accepted_submissions) AS total_accepted_submissions
+    FROM 
+        Submission_Stats
+    GROUP BY 
+        challenge_id) ss ON ss.challenge_id = cha.challenge_id
+GROUP BY 
+    con.contest_id, 
+    con.hacker_id, 
+    con.name
+HAVING 
+    sum_total_submissions + sum_total_accepted_submissions + sum_total_views + sum_total_unique_views > 0
+ORDER BY 
+    contest_id;
